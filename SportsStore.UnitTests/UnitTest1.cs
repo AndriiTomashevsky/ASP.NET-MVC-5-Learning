@@ -8,6 +8,8 @@ using Moq.Language.Flow;
 using SportsStore.Domain.Abstract;
 using SportsStore.Domain.Entities;
 using SportsStore.WebUI.Controllers;
+using SportsStore.WebUI.HtmlHelpers;
+using SportsStore.WebUI.Models;
 
 namespace SportsStore.UnitTests
 {
@@ -48,6 +50,36 @@ namespace SportsStore.UnitTests
             Assert.IsTrue(array.Length == 2);
             Assert.AreEqual(array[0].Name, "P4");
             Assert.AreEqual(array[1].Name, "P5");
+        }
+
+        //Чтобы протестировать вспомогательный метод PageLinks(), мы вызываем метод с тестовыми данными и сравниваем результаты
+        //с ожидаемой HTML-разметкой.
+        [TestMethod]
+        public void Can_Generate_Page_Links()
+        {
+            //Arrange - define an HTML helper - we need to do this in order to apply the extension method
+            HtmlHelper htmlHelper = null;
+
+            //Arrange - create PagingInfo data
+            PagingInfo pagingInfo = new PagingInfo
+            {
+                CurrentPage = 2,
+                TotalProducts = 28,
+                ProductsPerPage = 10
+            };
+
+            //Arrange - set up the delegate using a lambda experession
+            //Func<int, string> pageUrl = (int i) => "Page" + i;
+            string pageUrl(int i) => "Page" + i;
+
+            //Act
+            MvcHtmlString result = htmlHelper.PageLinks(pagingInfo, pageUrl);
+
+            //Assert
+            Assert.AreEqual(@"<a class=""btn btn-default"" href=""Page1"">1</a>"
+                 + @"<a class=""btn btn-default btn-primary selected"" href=""Page2"">2</a>"
+                 + @"<a class=""btn btn-default"" href=""Page3"">3</a>",
+                 result.ToString());
         }
     }
 }
