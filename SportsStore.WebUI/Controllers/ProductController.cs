@@ -11,6 +11,7 @@ namespace SportsStore.WebUI.Controllers
     public class ProductController : Controller
     {
         IProductRepository productRepository;
+        public int productsPerPage = 4;
 
         public ProductController(IProductRepository productRepository)
         {
@@ -18,9 +19,12 @@ namespace SportsStore.WebUI.Controllers
         }
 
         // GET: Product
-        public ViewResult List()
+        public ViewResult List(int page = 1)
         {
-            IEnumerable<Product> model = productRepository.Products;
+            IEnumerable<Product> model = productRepository.Products
+                .OrderBy(item => item.ProductID)
+                .Skip((page - 1) * productsPerPage)
+                .Take(productsPerPage);
 
             return View(model);
         }
