@@ -202,5 +202,41 @@ namespace SportsStore.UnitTests
             string result = navController.Menu(categoryToSelected).ViewBag.SelectedCategory;
         }
 
+        //Модульное тестирование: счетчик товаров определенной категории.
+        //Протестировать возможность генерации корректных счетчиков товаров для различных категорий можно очень просто - необходимо создать 
+        //имитированное хранилище, которое содержит известные данные в диапазоне категорий, и затем вызывать метод действия List(), запрашивая 
+        //каждую категорию по очереди.
+        [TestMethod]
+        public void Generate_Category_Specific_Product_Count()
+        {
+            //Arrange
+            // - create the mock repository
+            Mock<IProductRepository> mock = new Mock<IProductRepository>();
+            mock.Setup(repository => repository.Products).Returns(new Product[] {
+                new Product {ProductID = 1, Name = "P1", Category = "Cat1"},
+                new Product {ProductID = 2, Name = "P2", Category = "Cat2"},
+                new Product {ProductID = 3, Name = "P3", Category = "Cat1"},
+                new Product {ProductID = 4, Name = "P4", Category = "Cat2"},
+                new Product {ProductID = 5, Name = "P5", Category = "Cat3"}
+            });
+
+            //Arrange - create controller and make the ProductsPerPage 3 items
+            ProductController productController = new ProductController(mock.Object)
+            {
+                productsPerPage = 3
+            };
+
+            //Action - test the product counts for different categories
+            int result1 = ((ProductsListViewModel)productController.List("Cat1").Model).PagingInfo.TotalProducts;
+            int result2 = ((ProductsListViewModel)productController.List("Cat2").Model).PagingInfo.TotalProducts;
+            int result3 = ((ProductsListViewModel)productController.List("Cat3").Model).PagingInfo.TotalProducts;
+            int resultAll = ((ProductsListViewModel)productController.List(null).Model).PagingInfo.TotalProducts;
+
+            //Assert
+            Assert.AreEqual(result1, 2);
+            Assert.AreEqual(result2, 2);
+            Assert.AreEqual(result3, 1);
+            Assert.AreEqual(resultAll, 5);
+        }
     }
 }
