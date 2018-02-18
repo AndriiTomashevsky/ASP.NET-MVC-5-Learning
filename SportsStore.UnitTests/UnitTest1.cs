@@ -146,6 +146,36 @@ namespace SportsStore.UnitTests
             Assert.IsTrue(result[1].Name == "P4" && result[1].Category == "Cat2");
         }
 
+        //Модульное тестирование: генерация списка категорий.
+        //Цель заключается в создании списка, который отсортирован в алфавитном порядке и не содержит дубликатов.Для этого проще всего 
+        //построить тестовые данные, которые имеют дублированные категории и не отсортированы должным образом, передать их в NavController 
+        //и установить утверждение, что данные будут соответствующим образом очищены.
+        //Внутри теста создается имитированная реализация хранилища, которая содержит повторяющиеся категории и категории, не отсортированные 
+        //в алфавитном порядке.Затем определяется утверждение о том, что дубликаты будут удалены и алфавитный порядок восстановлен.
 
+        [TestMethod]
+        public void Can_Create_Categories()
+        {
+            //Arrange
+            //-create the mock repository
+            Mock<IProductRepository> mock = new Mock<IProductRepository>();
+            mock.Setup(item => item.Products).Returns(new Product[] {
+                new Product {ProductID = 1, Name = "P1", Category = "Apples"},
+                new Product {ProductID = 2, Name = "P2", Category = "Apples"},
+                new Product {ProductID = 3, Name = "P3", Category = "Plums"},
+                new Product {ProductID = 4, Name = "P4", Category = "Oranges"},
+            });
+
+            //Arrange-create the controller
+            NavController navController = new NavController(mock.Object);
+
+            //Act - get the set of categories
+            string[] results = ((IEnumerable<string>)navController.Menu().Model).ToArray();
+
+            Assert.AreEqual(results.Length, 3);
+            Assert.AreEqual(results[0], "Apples");
+            Assert.AreEqual(results[1], "Oranges");
+            Assert.AreEqual(results[2], "Plums");
+        }
     }
 }
