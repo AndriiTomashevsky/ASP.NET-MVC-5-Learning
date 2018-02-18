@@ -5,5 +5,5 @@
 @foreach (var value in Model)
 {
     @Html.RouteLink(value, new { controller = "Product", action = "List", category = value, page = 1 },
-         new { @class = "btn btn-block btn-default btn-lg" })
+             new { @class = "btn btn-block btn-default btn-lg" + (value == ViewBag.SelectedCategory ? " btn-primary" : "") })
 }

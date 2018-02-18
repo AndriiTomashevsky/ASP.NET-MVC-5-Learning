@@ -177,5 +177,30 @@ namespace SportsStore.UnitTests
             Assert.AreEqual(results[1], "Oranges");
             Assert.AreEqual(results[2], "Plums");
         }
+
+        //Модульное тестирование: сообщение о выбранной категории.
+        //Для выполнения проверки того, что метод действия Menu() корректно добавил детали о выбранной категории, в модульном тесте 
+        //можно прочитать значение свойства ViewBag, которое доступно через класс ViewResult.
+        [TestMethod]
+        public void Indicates_Selected_Category()
+        {
+            //Arrange 
+            //- create the mock repository
+            Mock<IProductRepository> mock = new Mock<IProductRepository>();
+            mock.Setup(productRepository => productRepository.Products).Returns(new Product[] {
+                new Product {ProductID = 1, Name = "P1", Category = "Apples"},
+                new Product {ProductID = 4, Name = "P2", Category = "Oranges"},
+            });
+
+            //Arrange-create the controller
+            NavController navController = new NavController(mock.Object);
+
+            //Arrange-define the category to selected
+            string categoryToSelected = "Apples";
+
+            //Action
+            string result = navController.Menu(categoryToSelected).ViewBag.SelectedCategory;
+        }
+
     }
 }
