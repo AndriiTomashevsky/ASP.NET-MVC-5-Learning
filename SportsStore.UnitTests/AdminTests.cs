@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web.Mvc;
 using Moq;
 using NUnit.Framework;
 using SportsStore.Domain.Abstract;
@@ -86,5 +87,54 @@ namespace SportsStore.UnitTests
             Assert.IsNull(result);
         }
 
+        //В методе действия Edit(), обрабатывающем запросы POST, мы должны удостовериться, что хранилищу товаров для сохранения передаются 
+        //допустимые обновления объекта Product, созданного связывателем модели. 
+        [Test]
+        public void Can_Save_Valid_Changes()
+        {
+            // Arrange - create mock repository
+            Mock<IProductRepository> mock = new Mock<IProductRepository>();
+
+            // Arrange - create the controller
+            AdminController adminController = new AdminController(mock.Object);
+
+            // Arrange - create a product
+            Product product = new Product { Name = "Test" };
+
+            // Act - try to save the product
+            ActionResult result = adminController.Edit(product);
+
+            // Assert - check that the repository was called
+            mock.Verify(productRepository => productRepository.SaveProduct(product));
+
+            // Assert - check the method result type
+            Assert.IsNotInstanceOf(typeof(ViewResult), result);
+        }
+
+        //Кроме того, необходимо проверить, что недопустимые обновления (т.е.содержащие ошибки модели) в хранилище не передаются.
+        [Test]
+        public void Cannot_Save_Invalid_Changes()
+        {
+            // Arrange - create mock repository
+            Mock<IProductRepository> mock = new Mock<IProductRepository>();
+
+            // Arrange - create the controller
+            AdminController adminController = new AdminController(mock.Object);
+
+            // Arrange - create a product
+            Product product = new Product { Name = "Test" };
+
+            // Arrange - add an error to the model state
+            adminController.ModelState.AddModelError("error", "error");
+
+            // Act - try to save the product
+            ActionResult result = adminController.Edit(product);
+
+            // Assert - check that the repository was not called
+            mock.Verify(productRepository => productRepository.SaveProduct(It.IsAny<Product>()), Times.Never());
+
+            // Assert - check the method result type
+            Assert.IsInstanceOf(typeof(ViewResult), result);
+        }
     }
 }

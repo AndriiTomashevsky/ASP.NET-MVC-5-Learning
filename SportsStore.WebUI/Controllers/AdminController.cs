@@ -27,5 +27,22 @@ namespace SportsStore.WebUI.Controllers
 
             return View(product);
         }
+
+        [HttpPost]
+        public ActionResult Edit(Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                productRepository.SaveProduct(product);
+                TempData["message"] = string.Format($"{product.Name} has been Saved");
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                // there is something wrong with the data values
+                return View(product);
+            }
+        }
     }
 }
