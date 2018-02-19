@@ -1,11 +1,15 @@
-﻿@model SportsStore.WebUI.Models.CartIndxeViewModel
+﻿@model SportsStore.WebUI.Models.CartIndexViewModel
 
 @{
     ViewBag.Title = "Sports Store: Your Cart";
 }
 
+<style>
+    #cartTable td { vertical-align: middle; }
+</style>
+
 <h2>Your cart</h2>
-<table class="table">
+<table id="cartTable" class="table">
     <thead>
         <tr>
             <th>Quantity</th>
@@ -23,6 +27,14 @@
                 <td class="text-right">@line.Product.Price.ToString("c")</td>
                 <td class="text-right">
                     @((line.Quantity * line.Product.Price).ToString("c"))
+                </td>
+                <td>
+                    @using (Html.BeginForm("RemoveFromCart", "Cart"))
+                    {
+                        @Html.HiddenFor(x => x.ReturnUrl)
+                        @Html.Hidden("ProductId", line.Product.ProductID)
+                        <input class="btn btn-sm btn-warning" type="submit" value="Remove" />
+                    }
                 </td>
             </tr>
         }
