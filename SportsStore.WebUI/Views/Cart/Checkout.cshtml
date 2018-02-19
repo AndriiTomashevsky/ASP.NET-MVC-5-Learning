@@ -1,6 +1,8 @@
 ﻿@model SportsStore.Domain.Entities.ShippingDetails
 
 @{
+    /**/
+
     ViewBag.Title = "SportStore: Checkout";
 }
 
@@ -18,34 +20,16 @@
 
     <h3>Address</h3>
 
-    <div class="form-group">
-        <label>Line 1:</label>
-        @Html.TextBoxFor(x => x.Line1, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>Line 2:</label>
-        @Html.TextBoxFor(x => x.Line2, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>Line 3:</label>
-        @Html.TextBoxFor(x => x.Line3, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>City:</label>
-        @Html.TextBoxFor(x => x.City, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>State:</label>
-        @Html.TextBoxFor(x => x.State, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>Zip:</label>
-        @Html.TextBoxFor(x => x.Zip, new { @class = "form-control" })
-    </div>
-    <div class="form-group">
-        <label>Country:</label>
-        @Html.TextBoxFor(x => x.Country, new { @class = "form-control" })
-    </div>
+    foreach (var item in ViewData.ModelMetadata.Properties)
+    {
+        if (item.PropertyName != "Name" && item.PropertyName != "GiftWrap")
+        {
+            <div class="form-group">
+                <label>@(item.DisplayName ?? item.PropertyName)</label>
+                @Html.TextBox(item.PropertyName, null, new { @class = "form-control" })
+            </div>
+        }
+    }
 
     <h3>Options</h3>
     <div class="checkbox">
