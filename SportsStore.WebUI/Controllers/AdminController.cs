@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace SportsStore.WebUI.Controllers
 {
+    [Authorize]
     public class AdminController : Controller
     {
         IProductRepository productRepository;
