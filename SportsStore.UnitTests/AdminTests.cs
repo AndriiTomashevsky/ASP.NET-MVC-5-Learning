@@ -136,5 +136,35 @@ namespace SportsStore.UnitTests
             // Assert - check the method result type
             Assert.IsInstanceOf(typeof(ViewResult), result);
         }
+
+        //Тестированию подлежит основное поведение метода действия Delete(), которое заключается в том, что при передаче в качестве параметра 
+        //допустимого идентификатора ProductId метод действия должен вызвать метод DeleteProduct() хранилища и передать ему корректное значение 
+        //ProductId удаляемого товара.
+        [Test]
+        public void Can_Delete_Valid_Products()
+        {
+            //Arrange - create a Product
+            Product product = new Product { ProductID = 2, Name = "Test" };
+
+            //Arrange - create the mock repository
+            Mock<IProductRepository> mock = new Mock<IProductRepository>();
+            mock.Setup(m => m.Products).Returns(new Product[] {
+                new Product {ProductID = 1, Name = "P1"},
+                product,
+                new Product {ProductID = 3, Name = "P3"},
+            });
+
+            //Arrange - create the controller
+            AdminController adminController = new AdminController(mock.Object);
+
+            //Act - delete product
+            adminController.Delete(product.ProductID);
+
+            // Утверждение - проверка того, что метод удаления в хранилище
+            // вызывается для корректного объекта Product
+            // Assert - ensure that the repository delete method was
+            // called with the correct Product
+            mock.Verify(productRepository => productRepository.DeleteProduct(product.ProductID));
+        }
     }
 }
